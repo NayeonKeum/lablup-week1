@@ -1,0 +1,36 @@
+services:
+  redis:
+    image: redis/redis-stack:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    restart: always
+    networks:
+      - default
+  web-server:
+    build:
+      context: ./WEB/
+      dockerfile: ./Dockerfile
+    container_name: web-server
+    ports:
+      - 3000:3000
+    stdin_open: true
+    networks:
+      - default
+
+  was-server:
+    build:
+      context: ./WAS/
+      dockerfile: ./Dockerfile
+    container_name: was-server
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/server
+    stdin_open: true
+    networks:
+      - default
+
+networks:
+  default:
+    name: lablup-network
