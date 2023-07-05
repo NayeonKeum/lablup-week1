@@ -1,0 +1,7 @@
+.background {
+  background: #f5f5f5;
+  overflow: auto;
+  min-height: 800px;
+  height: 100%;
+  width: 100%;
+}
