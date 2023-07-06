@@ -8,23 +8,29 @@ services:
     networks:
       - default
   web-server:
-    image: ryann3/lablup-chat-web-server:1.0
+    build:
+      context: ./WEB/
+      dockerfile: ./Dockerfile
     container_name: web-server
     ports:
       - 3000:3000
     stdin_open: true
     networks:
       - default
-    restart: always
+
   was-server:
-    image: ryann3/lablup-chat-was-server:1.0
+    build:
+      context: ./WAS/
+      dockerfile: ./Dockerfile
     container_name: was-server
     ports:
       - 8080:8080
+    volumes:
+      - .:/server
     stdin_open: true
     networks:
       - default
-    restart: always
+
 networks:
   default:
     name: lablup-network
