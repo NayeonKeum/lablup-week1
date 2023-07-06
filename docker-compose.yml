@@ -8,7 +8,7 @@ services:
     networks:
       - default
   web-server:
-    image: ryann3/lablup-chat-web-server:latest
+    image: ryann3/lablup-chat-web-server:1.0
     container_name: web-server
     ports:
       - 3000:3000
@@ -16,7 +16,7 @@ services:
     networks:
       - default
   was-server:
-    image: ryann3/lablup-chat-was-server:latest
+    image: ryann3/lablup-chat-was-server:1.0
     container_name: was-server
     ports:
       - 8080:8080
