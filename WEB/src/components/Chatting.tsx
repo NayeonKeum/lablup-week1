@@ -11,7 +11,10 @@ function Chatting({ name }: { name: String }) {
 
   ws.current.onmessage = (evt: MessageEvent) => {
     var content = JSON.parse(evt.data).content;
-    console.log("content: " + content);
+    // my chat
+    if (content.startsWith(name + ": ")) {
+      content = content.split(": ")[1];
+    }
     addItem(content);
   };
 
