@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { WebSocketContext } from "../websocket/WebSocketProvider";
 
-function Chatting() {
+function Chatting({ name }: { name: String }) {
   const ws = useContext(WebSocketContext);
   const [items, setItems] = useState<string[]>([]);
 
@@ -10,10 +10,6 @@ function Chatting() {
   };
 
   ws.current.onmessage = (evt: MessageEvent) => {
-    // var json_str = JSON.parse(evt.data);
-    // var data = json_str.replaceAll("'", '"');
-    // var content = JSON.parse(data).content;
-
     var content = JSON.parse(evt.data).content;
     console.log("content: " + content);
     addItem(content);

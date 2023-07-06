@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { WebSocketContext } from "../websocket/WebSocketProvider";
 
-function TextInputBox() {
+function TextInputBox({ name }: { name: String }) {
   const [message, setMessage] = useState("");
   const [isAvailable, setIsAvailable] = useState<boolean>(true);
   const ws = useContext(WebSocketContext);
