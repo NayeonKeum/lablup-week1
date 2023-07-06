@@ -9,20 +9,14 @@ const Home: FC = (): JSX.Element => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [name, setName] = useState<String>("");
   const navigate = useNavigate();
-
   const login = async (data: any) => {
-    setName(data.name);
     let params = {
       name: data.name,
     };
-    console.log(params);
     axios
       .post("http://localhost:8080/", new URLSearchParams(params))
       .then(function (response) {
-        console.log("success... print response");
-        console.log(response);
         if (response.data == "Success") {
           alert("로그인 성공!");
         }
@@ -38,7 +32,7 @@ const Home: FC = (): JSX.Element => {
 
   return (
     <div>
-      <h1>Login to Chat</h1>
+      <h1>Login</h1>
       <form autoComplete="off" onSubmit={handleSubmit(login)}>
         <div className="">
           <label className="form-label">이름을 입력해주세요.</label>

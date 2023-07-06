@@ -11,11 +11,8 @@ function TextInputBox({ name }: { name: String }) {
   };
 
   const handleClickSubmit = () => {
-    console.log("send: " + message);
     ws.current.send(message);
-
     setMessage("");
-
     if (message == "quit") {
       setIsAvailable(false);
     }
