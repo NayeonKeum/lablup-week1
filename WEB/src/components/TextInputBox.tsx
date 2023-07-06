@@ -16,7 +16,7 @@ function TextInputBox({ name }: { name: String }) {
 
     setMessage("");
 
-    if (message == "quit") {
+    if (message == "quity") {
       setIsAvailable(false);
     }
   };
