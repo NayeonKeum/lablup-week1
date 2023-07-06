@@ -2,8 +2,8 @@ name: Docker Image CI(WEB server)
 
 on:
   push:
-    branches: 
-      - "main"
+    branches:
+      - "master"
 
 jobs:
   build-and-push-image:
