@@ -3,7 +3,7 @@ name: Docker Image CI(WEB server)
 on:
   push:
     paths:
-      - "./WEB"
+      - "WEB/**"
     branches:
       - "master"
 
