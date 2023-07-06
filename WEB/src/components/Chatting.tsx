@@ -12,7 +12,6 @@ function Chatting({ name }: { name: String }) {
   ws.current.onmessage = (evt: MessageEvent) => {
     var content = JSON.parse(evt.data).content;
     // my chat
-    // test docker ci
     if (content.startsWith(name + ": ")) {
       content = content.split(": ")[1];
     }

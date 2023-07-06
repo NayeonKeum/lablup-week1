@@ -9,7 +9,7 @@ const Chatroom: FC = () => {
   const name = location.state.name;
   return (
     <div>
-      <h1> Hi {name} 👋</h1>
+      <h1> Hello {name} 👋</h1>
       <WebSocketProvider>
         <Chatting name={name} />
         <TextInputBox name={name} />
