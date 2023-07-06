@@ -8,8 +8,6 @@ from aiohttp_session import get_session, setup, redis_storage
 
 
 async def _init(app):
-    # test docker ci
-
     # ("redis://redis:6379") docker addr
     # ("redis://localhost") local dev addr
     connection = await redis.from_url("redis://redis:6379")
@@ -89,7 +87,7 @@ class ChatRoomHandler(web.View):
 
 async def handle_ws(ws, name):
     async for msg in ws:
-        if msg.data == "quit":
+        if msg.data == "quity":
             await ws.close()
         else:
             await app["connection"].publish("lablup-chat", f"{name}: {msg.data}")
