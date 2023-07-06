@@ -87,7 +87,7 @@ class ChatRoomHandler(web.View):
 
 async def handle_ws(ws, name):
     async for msg in ws:
-        if msg.data == "quity":
+        if msg.data == "quit":
             await ws.close()
         else:
             await app["connection"].publish("lablup-chat", f"{name}: {msg.data}")
