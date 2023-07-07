@@ -62,3 +62,9 @@ docker compose build && docker compose up
 - Checkout `./.github/workflows/was-image-build.yml` and `./.github/workflows/web-image-build.yml`
   - `./WEB/` for web-frontend(React.ts)
   - `./WAS/` for backend-server(Python-aiohttp)
+
+## ETC
+
+### Error log🐞...
+
+- [Onboarding Error log🐞](https://proud-passbook-808.notion.site/Onboarding-Error-log-ceebbf16752c4fb59877327a954633fe?pvs=4)
