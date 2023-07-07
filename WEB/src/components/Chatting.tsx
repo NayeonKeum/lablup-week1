@@ -1,29 +1,36 @@
 import React, { useContext, useState } from "react";
 import { WebSocketContext } from "../websocket/WebSocketProvider";
+import MessageList, { MessageType } from "../props/MessageList";
 
 function Chatting({ name }: { name: String }) {
   const ws = useContext(WebSocketContext);
   const [items, setItems] = useState<string[]>([]);
+  const [messageList, setMessageList] = useState<MessageType[]>([]);
 
-  const addItem = (item: string) => {
-    setItems([...items, item]);
+  // props list
+  const addMessage = (message: MessageType) => {
+    setMessageList([...messageList, message]);
   };
 
   ws.current.onmessage = (evt: MessageEvent) => {
-    var content = JSON.parse(evt.data).content;
-    // my chat
-    if (content.startsWith(name + ": ")) {
-      content = content.split(": ")[1];
-    }
-    addItem(content);
+    // props list
+    const data = JSON.parse(evt.data);
+    const sender = data.content.split(": ")[0];
+    const content = data.content.split(": ")[1];
+    const time = data.time.split(".")[0];
+    var message: MessageType = {
+      curUser: name,
+      sender: sender,
+      content: content,
+      time: time,
+    };
+    addMessage(message);
   };
 
   return (
-    <ul>
-      {items.map((message) => {
-        return <li>{message}</li>;
-      })}
-    </ul>
+    <div>
+      <MessageList messageList={messageList} />
+    </div>
   );
 }
 
