@@ -58,5 +58,7 @@ docker compose build && docker compose up
 
 **4. Info**
 
-- `./WEB/` for web-frontend(React.ts)
-- `./WAS/` for backend-server(Python-aiohttp)
+- There is a Docker CI for web, was server each made by github actions.
+- Checkout `./.github/workflows/was-image-build.yml` and `./.github/workflows/web-image-build.yml`
+  - `./WEB/` for web-frontend(React.ts)
+  - `./WAS/` for backend-server(Python-aiohttp)
