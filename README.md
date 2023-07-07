@@ -9,6 +9,10 @@
 - Can chat with multiple users in a single chatroom
   ![features](./src/features.gif)
 
+  ![simple-architecture](./src/simple-architecture.png)
+
+  ![simple-architecture-plus](./src/simple-architecture-plus.png)
+
 ## Execute
 
 ## How to execute
