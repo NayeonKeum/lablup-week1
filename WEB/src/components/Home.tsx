@@ -34,8 +34,10 @@ const Home: FC = (): JSX.Element => {
     <div>
       <h1>Login</h1>
       <form autoComplete="off" onSubmit={handleSubmit(login)}>
-        <div className="">
+        <div className="home-component">
           <label className="form-label">이름을 입력해주세요.</label>
+        </div>
+        <div className="home-component">
           <input
             type="text"
             className="form-control form-control-sm"
@@ -50,12 +52,14 @@ const Home: FC = (): JSX.Element => {
             </p>
           )}
         </div>
-        <button
-          className="btn btn-outline-primary text-center shadow-none mb-3"
-          type="submit"
-        >
-          로그인
-        </button>
+        <div className="home-component">
+          <button
+            className="btn btn-outline-primary text-center mb-3"
+            type="submit"
+          >
+            로그인
+          </button>
+        </div>
       </form>
     </div>
   );

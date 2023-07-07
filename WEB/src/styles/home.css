@@ -1,7 +1,6 @@
-.background {
-  background: #f5f5f5;
-  overflow: auto;
-  min-height: 800px;
-  height: 100%;
-  width: 100%;
+.home-component {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  margin: 20px;
 }

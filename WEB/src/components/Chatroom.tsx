@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import "../styles/home.css";
 import Chatting from "./Chatting";
 import TextInputBox from "./TextInputBox";
 import WebSocketProvider from "../websocket/WebSocketProvider";

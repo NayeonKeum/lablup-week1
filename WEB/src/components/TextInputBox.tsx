@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { WebSocketContext } from "../websocket/WebSocketProvider";
+import "../styles/chat.css";
 
 function TextInputBox({ name }: { name: String }) {
   const [message, setMessage] = useState("");
@@ -21,7 +22,7 @@ function TextInputBox({ name }: { name: String }) {
   return (
     <div>
       {isAvailable && (
-        <div>
+        <div className="text-input-box">
           <input
             type="text"
             value={message}

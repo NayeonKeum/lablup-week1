@@ -1,0 +1,24 @@
+.server-chat {
+  background: #d8d8d8;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+.others-chat {
+  background: #afeeee;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+.my-chat {
+  background: #ffd700;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.text-input-box {
+  position: fixed;
+  bottom: 0px;
+  margin-block: 20px;
+  margin-left: 20px;
+}
