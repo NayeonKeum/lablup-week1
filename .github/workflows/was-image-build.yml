@@ -30,4 +30,4 @@ jobs:
           file: ./WAS/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ryann3/lablup-chat-was-server:1.0
+          tags: ryann3/lablup-chat-was-server:1.1
