@@ -4,27 +4,64 @@ import aiohttp_cors
 from datetime import datetime
 from aiohttp import web
 import redis.asyncio as redis
-from aiohttp_session import get_session, setup, redis_storage
+from aiohttp_session import redis_storage, setup, get_session
 import os
 
 
-async def _init(app):
-    # DB init
-    connection = await redis.from_url(os.environ["REDIS_ADDR"])
-    app["connection"] = connection
-    async with connection.pubsub() as pubsub:
+async def init_all(app):
+    # 1.WebSocket set init
+    app["websockets"] = set()
+    # 2. Web init
+    app = _init_web(app)
+    # 3. DB connection init
+    app = await _init_db(app)
+
+
+def _init_web(app):
+    # Add routers
+    app.router.add_routes([
+        web.post('/', WebSocketHandler),
+        web.get('/chat', ChatRoomHandler),
+    ])
+    # Add CORS for WEB Server
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+            allow_methods="*"
+        )
+    })
+    for route in list(app.router.routes()):
+        cors.add(route)
+    return app
+
+
+async def _init_db(app):
+    redis_conn = await redis.from_url(os.environ["REDIS_ADDR"])
+    app["redis_conn"] = redis_conn
+    async with redis_conn.pubsub() as pubsub:
         app["pubsub"] = pubsub
-        storage = redis_storage.RedisStorage(connection, httponly=True)
+        storage = redis_storage.RedisStorage(redis_conn)
         setup(app, storage)
+        return app
 
 
-class WebsocketHandler(web.View):
+async def dispose_all(app):
+    # WebSocket close tasks
+    tasks = [ws.close() for ws in app["websockets"]]
+    await asyncio.gather(*tasks)
+    # DB connection dispose
+    await app["redis_conn"].close()
+
+
+class WebSocketHandler(web.View):
     async def post(self, ):
         data = await self.request.post()
         name = data.get("name")
 
         # Make redis connection with name
-        await app["connection"].set(name, name+"-val")
+        await app["redis_conn"].set(name, name+"-val")
 
         # Maintain session for global use
         global session
@@ -37,7 +74,7 @@ class WebsocketHandler(web.View):
 
 class ChatRoomHandler(web.View):
     async def get(self, ):
-        # Maintained sessioin
+        # Get maintained session
         global session
         name = session["name"]
 
@@ -46,7 +83,7 @@ class ChatRoomHandler(web.View):
         app["websockets"].add(ws)
         await ws.prepare(self.request)
 
-        # Get redis pubsub
+        # Get redis pubsub & subscribe
         pubsub = app["pubsub"]
         await pubsub.psubscribe("lablup-chat")
 
@@ -55,29 +92,20 @@ class ChatRoomHandler(web.View):
         ws_task = asyncio.create_task(handle_ws(ws, name))
 
         # Intro
-        await app["connection"].publish("lablup-chat", f"server: {name}님이 입장하셨습니다. 나가시려면 quit을 입력해주세요.")
+        await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 입장하셨습니다. 나가시려면 quit을 입력해주세요.")
 
         # Chatting(websocket) task
         await ws_task
 
         # Outro
-        await app["connection"].publish("lablup-chat", f"server: {name}님이 퇴장하셨습니다.")
+        await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 퇴장하셨습니다.")
 
         # Discard websocket and redis tasks
         app["websockets"].discard(ws)
-        await app["connection"].delete(name)
+        await app["redis_conn"].delete(name)
         redis_task.cancel()
 
         return ws
-
-
-async def handle_ws(ws, name):
-    async for msg in ws:
-        # Closing message
-        if msg.data == "quit":
-            await ws.close()
-        else:
-            await app["connection"].publish("lablup-chat", f"{name}: {msg.data}")
 
 
 async def handle_redis(pubsub):
@@ -87,40 +115,30 @@ async def handle_redis(pubsub):
             await broadcast(msg_redis["data"].decode())
 
 
+async def handle_ws(ws, name):
+    async for msg in ws:
+        # Closing message
+        if msg.data == "quit":
+            await ws.close()
+        else:
+            await app["redis_conn"].publish("lablup-chat", f"{name}: {msg.data}")
+
+
 async def broadcast(message):
-    # Queue for broadcasting messages to websockets(fifo)
-    websockets = asyncio.Queue()
+    # Broadcasting messages to websockets
     msgBody = {
         "content": f"{message}",
         "time": str(datetime.now()),
     }
-    for websocket in app["websockets"]:
-        await websockets.put(websocket)
-    while not websockets.empty():
-        ws = await websockets.get()
-        await ws.send_json(msgBody)
+    # Gather all ws tasks and execute at once
+    tasks = [ws.send_json(msgBody) for ws in app["websockets"]]
+    await asyncio.gather(*tasks)
+
 
 if __name__ == "__main__":
-    app = aiohttp.web.Application()
-    app.on_startup.append(_init)
+    app = web.Application()
 
-    app["websockets"] = set()
-
-    app.router.add_routes([
-        web.post('/', WebsocketHandler),
-        web.get('/chat', ChatRoomHandler),
-    ])
-
-    # Add CORS for WEB Server
-    cors = aiohttp_cors.setup(app, defaults={
-        "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-            allow_methods="*"
-        )
-    })
-    for route in list(app.router.routes()):
-        cors.add(route)
+    app.on_startup.append(init_all)
+    app.on_shutdown.append(dispose_all)
 
     web.run_app(app, port=8080)
