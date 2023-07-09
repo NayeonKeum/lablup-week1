@@ -92,7 +92,7 @@ class ChatRoomHandler(web.View):
         ws_task = asyncio.create_task(handle_ws(ws, name))
 
         # Intro
-        await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 입장하셨습니다. 나가시려면 quit을 입력해주세요.")
+        await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 입장하셨습니다.")
 
         # Chatting(websocket) task
         await ws_task

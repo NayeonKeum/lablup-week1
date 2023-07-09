@@ -11,7 +11,7 @@ const Chatroom: FC = () => {
       <h1> Hello {name} 👋</h1>
       <WebSocketProvider>
         <Chatting name={name} />
-        <TextInputBox name={name} />
+        <TextInputBox />
       </WebSocketProvider>
     </div>
   );

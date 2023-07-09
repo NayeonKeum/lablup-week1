@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { WebSocketContext } from "../websocket/WebSocketProvider";
 import "../styles/chat.css";
 
-function TextInputBox({ name }: { name: String }) {
+function TextInputBox() {
   const [message, setMessage] = useState("");
   const [isAvailable, setIsAvailable] = useState<boolean>(true);
   const ws = useContext(WebSocketContext);
@@ -11,12 +11,17 @@ function TextInputBox({ name }: { name: String }) {
     setMessage(e.target.value);
   };
 
-  const handleClickSubmit = () => {
+  const handleClickSend = () => {
     ws.current.send(message);
     setMessage("");
     if (message == "quit") {
       setIsAvailable(false);
     }
+  };
+  const handleClickQuit = () => {
+    ws.current.send("quit");
+    setMessage("");
+    setIsAvailable(false);
   };
 
   return (
@@ -28,8 +33,11 @@ function TextInputBox({ name }: { name: String }) {
             value={message}
             onChange={handleChangeText}
           ></input>
-          <button type="button" onClick={handleClickSubmit}>
-            Send!
+          <button type="button" onClick={handleClickSend}>
+            Send
+          </button>
+          <button type="button" onClick={handleClickQuit}>
+            Quit
           </button>
         </div>
       )}
