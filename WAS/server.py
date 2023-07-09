@@ -1,15 +1,14 @@
 import asyncio
-import aiohttp
-import aiohttp_cors
-from datetime import datetime
 from aiohttp import web
-import redis.asyncio as redis
+import aiohttp_cors
 from aiohttp_session import redis_storage, setup, get_session
+import redis.asyncio as redis
+from datetime import datetime
 import os
 
 
 async def init_all(app):
-    # 1.WebSocket set init
+    # 1. WebSocket set init
     app["websockets"] = set()
     # 2. Web init
     app = _init_web(app)
@@ -20,7 +19,7 @@ async def init_all(app):
 def _init_web(app):
     # Add routers
     app.router.add_routes([
-        web.post('/', WebSocketHandler),
+        web.post('/', InitHandler),
         web.get('/chat', ChatRoomHandler),
     ])
     # Add CORS for WEB Server
@@ -55,8 +54,9 @@ async def dispose_all(app):
     await app["redis_conn"].close()
 
 
-class WebSocketHandler(web.View):
+class InitHandler(web.View):
     async def post(self, ):
+        # Name init(from request body)
         data = await self.request.post()
         name = data.get("name")
 
@@ -97,10 +97,7 @@ class ChatRoomHandler(web.View):
         # Chatting(websocket) task
         await ws_task
 
-        # Outro
-        await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 퇴장하셨습니다.")
-
-        # Discard websocket and redis tasks
+        # Discard websocket and redis task
         app["websockets"].discard(ws)
         await app["redis_conn"].delete(name)
         redis_task.cancel()
@@ -119,6 +116,8 @@ async def handle_ws(ws, name):
     async for msg in ws:
         # Closing message
         if msg.data == "quit":
+            # Outro
+            await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 퇴장하셨습니다.")
             await ws.close()
         else:
             await app["redis_conn"].publish("lablup-chat", f"{name}: {msg.data}")
