@@ -1,5 +1,6 @@
 import asyncio
-from aiohttp import web, CancelledError
+from asyncio import CancelledError
+from aiohttp import web
 import aiohttp_cors
 from aiohttp_session import redis_storage, setup, get_session
 import redis.asyncio as redis
@@ -61,13 +62,15 @@ class InitHandler(web.View):
         name = data.get("name")
 
         # Make redis connection with name
-        await app["redis_conn"].set(name, name+"-val")
+        await app["redis_conn"].set(name, "connected")
 
-        # Maintain session for global use
-        global session
+        # Get session from primary request
         session = await get_session(self.request)
         session["name"] = name
         session['last_visit'] = str(datetime.now())
+
+        # Maintain session for later use
+        app["session"] = session
 
         return web.Response(status=200, text="Success")
 
@@ -75,7 +78,7 @@ class InitHandler(web.View):
 class ChatRoomHandler(web.View):
     async def get(self, ):
         # Get maintained session
-        global session
+        session = app["session"]
         name = session["name"]
 
         # Create WebSocket
