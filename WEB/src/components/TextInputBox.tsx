@@ -30,13 +30,22 @@ function TextInputBox() {
         <div className="text-input-box">
           <input
             type="text"
+            className="form-control form-control-sm"
             value={message}
             onChange={handleChangeText}
           ></input>
-          <button type="button" onClick={handleClickSend}>
+          <button
+            className="btn btn-outline-success text-center mb-3"
+            type="button"
+            onClick={handleClickSend}
+          >
             Send
           </button>
-          <button type="button" onClick={handleClickQuit}>
+          <button
+            className="btn btn-outline-danger text-center mb-3"
+            type="button"
+            onClick={handleClickQuit}
+          >
             Quit
           </button>
         </div>
