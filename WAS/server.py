@@ -1,5 +1,5 @@
 import asyncio
-from aiohttp import web
+from aiohttp import web, CancelledError
 import aiohttp_cors
 from aiohttp_session import redis_storage, setup, get_session
 import redis.asyncio as redis
@@ -95,7 +95,10 @@ class ChatRoomHandler(web.View):
         await app["redis_conn"].publish("lablup-chat", f"server: {name}님이 입장하셨습니다.")
 
         # Chatting(websocket) task
-        await ws_task
+        try:
+            await ws_task
+        except CancelledError:
+            print("WebSocket task cancled detected.")
 
         # Discard websocket and redis task
         app["websockets"].discard(ws)
