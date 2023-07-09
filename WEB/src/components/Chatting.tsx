@@ -4,7 +4,6 @@ import MessageList, { MessageType } from "../props/MessageList";
 
 function Chatting({ name }: { name: String }) {
   const ws = useContext(WebSocketContext);
-  const [items, setItems] = useState<string[]>([]);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
 
   // props list

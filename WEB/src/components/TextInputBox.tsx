@@ -28,21 +28,23 @@ function TextInputBox() {
     <div>
       {isAvailable && (
         <div className="text-input-box">
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            value={message}
-            onChange={handleChangeText}
-          ></input>
+          <div className="text-input">
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              value={message}
+              onChange={handleChangeText}
+            />
+          </div>
           <button
-            className="btn btn-outline-success text-center mb-3"
+            className="btn btn-outline-success text-center mb-3 text-input-btn"
             type="button"
             onClick={handleClickSend}
           >
             Send
           </button>
           <button
-            className="btn btn-outline-danger text-center mb-3"
+            className="btn btn-outline-danger text-center mb-3 text-input-btn"
             type="button"
             onClick={handleClickQuit}
           >
@@ -51,8 +53,10 @@ function TextInputBox() {
         </div>
       )}
       {!isAvailable && (
-        <div>
-          <p>채팅방을 나가셨습니다.</p>
+        <div className="text-input-box">
+          <div>
+            <p>채팅방을 나가셨습니다.</p>
+          </div>
         </div>
       )}
     </div>

@@ -16,9 +16,20 @@
   display: flex;
   justify-content: flex-end;
 }
+.text-input {
+  float: left;
+  width: 60%;
+  margin-right: 10px;
+}
 .text-input-box {
+  float: left;
   position: fixed;
   bottom: 0px;
-  margin-block: 20px;
+  width: 100%;
   margin-left: 20px;
+  margin-bottom: 20px;
+}
+.text-input-btn {
+  float: left;
+  margin-left: 5px;
 }
