@@ -19,10 +19,12 @@ const Home: FC = (): JSX.Element => {
       .then(function (response) {
         if (response.data == "Success") {
           alert("로그인 성공!");
+          navigate("/chatroom", {
+            state: { name: data.name },
+          });
+        } else {
+          alert("❌ 로그인 실패 ❌");
         }
-        navigate("/chatroom", {
-          state: { name: data.name },
-        });
       })
       .catch(function (error) {
         console.log("error accured");
