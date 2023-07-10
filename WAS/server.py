@@ -40,11 +40,16 @@ def _init_web(app):
 async def _init_db(app):
     redis_conn = await redis.from_url(os.environ["REDIS_ADDR"])
     app["redis_conn"] = redis_conn
-    async with redis_conn.pubsub() as pubsub:
-        app["pubsub"] = pubsub
-        storage = redis_storage.RedisStorage(redis_conn)
-        setup(app, storage)
-        return app
+
+    # Init pubsub
+    pubsub = redis_conn.pubsub()
+    await pubsub.psubscribe("lablup-chat")
+    app["pubsub"] = pubsub
+
+    # Setup storage for session
+    storage = redis_storage.RedisStorage(redis_conn)
+    setup(app, storage)
+    return app
 
 
 async def dispose_all(app):
@@ -54,6 +59,7 @@ async def dispose_all(app):
         await asyncio.gather(*tasks)
     except CancelledError:
         print("Disposing websocket task cancel detected.")
+        raise
     # DB connection dispose
     await app["redis_conn"].close()
 
@@ -89,9 +95,8 @@ class ChatRoomHandler(web.View):
         app["websockets"].add(ws)
         await ws.prepare(self.request)
 
-        # Get redis pubsub & subscribe
+        # Get redis pubsub
         pubsub = app["pubsub"]
-        await pubsub.psubscribe("lablup-chat")
 
         # Create tasks for redis and websocket
         redis_task = asyncio.create_task(handle_redis(pubsub))
@@ -105,6 +110,7 @@ class ChatRoomHandler(web.View):
             await ws_task
         except CancelledError:
             print("WebSocket task cancel detected.")
+            raise
 
         # Discard websocket and redis task
         app["websockets"].discard(ws)
@@ -144,6 +150,7 @@ async def broadcast(message):
         await asyncio.gather(*tasks)
     except CancelledError:
         print("Broadcasting task cancel detected.")
+        raise
 
 
 if __name__ == "__main__":
