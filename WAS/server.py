@@ -50,7 +50,10 @@ async def _init_db(app):
 async def dispose_all(app):
     # WebSocket close tasks
     tasks = [ws.close() for ws in app["websockets"]]
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except CancelledError:
+        print("Disposing websocket task cancel detected.")
     # DB connection dispose
     await app["redis_conn"].close()
 
@@ -101,7 +104,7 @@ class ChatRoomHandler(web.View):
         try:
             await ws_task
         except CancelledError:
-            print("WebSocket task cancled detected.")
+            print("WebSocket task cancel detected.")
 
         # Discard websocket and redis task
         app["websockets"].discard(ws)
@@ -137,7 +140,10 @@ async def broadcast(message):
     }
     # Gather all ws tasks and execute at once
     tasks = [ws.send_json(msgBody) for ws in app["websockets"]]
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except CancelledError:
+        print("Broadcasting task cancel detected.")
 
 
 if __name__ == "__main__":
